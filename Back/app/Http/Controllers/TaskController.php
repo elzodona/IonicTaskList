@@ -62,10 +62,6 @@ class TaskController extends Controller
 
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request,$idUser)
     {
        try{
@@ -85,9 +81,6 @@ class TaskController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($idUser,$idTask)
     {
         try {
@@ -107,4 +100,5 @@ class TaskController extends Controller
         }
 
     }
+    
 }
