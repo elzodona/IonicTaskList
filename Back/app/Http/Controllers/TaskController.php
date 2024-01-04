@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Controllers\RequestMessages;
 
 class TaskController extends Controller
 {
+    private $message;
+
+    public function __construct() {
+        $this->message = new RequestMessages();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -21,15 +28,28 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+       
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request)
+    public function store(Request $request, $idUser)
     {
-        //
+        try{
+                $task = Task::create([
+                    "title" => $request->title,
+                    "description"=>$request->description,
+                    "etat"=>"not_done",
+                    "user_id"=>$idUser
+                ]);
+                return $this->message->succedRequest($task,"Task added successfully!",201);  
+
+            }catch(QueryException $e){
+            if($e->getCode() == '23000');    
+            return $this->message->errorRequest("Adding Error!",404);           
+        } 
+      
     }
 
     /**
