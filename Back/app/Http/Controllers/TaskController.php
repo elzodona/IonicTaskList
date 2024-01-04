@@ -11,10 +11,31 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+     public function compareId($id)
+     {
+        if (auth()->user()->id == $id) {
+            return true;
+        }
+        return false;
+     }
+
+    public function listeTask($idUser)
     {
-        //
+        if ($this->compareId($idUser)) {
+            $task = Task::where('id', $idUser)->get();
+            return response()->json([
+                'task' => $task
+            ]);
+
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
     }
+
 
     /**
      * Show the form for creating a new resource.
