@@ -10,9 +10,9 @@ class RequestMessages extends Controller
     {
         $response = [
             'status'=>$status,
+            'message'=>$message,
             'success'=>true,
             'data'=>$result,
-            'message'=>$message
         ];
         return response()->json($response);
     }

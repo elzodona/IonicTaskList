@@ -18,36 +18,46 @@ class TaskController extends Controller
         $this->message = new RequestMessages();
     }
 
-     public function compareId($id)
-     {
+    public function compareId($id)
+    {
         if (auth()->user()->id == $id) {
             return true;
         }
         return false;
-     }
+    }
 
     public function index($idUser)
     {
-        $tasks = Task::where('user_id',$idUser)->get();
-        return $this->message->succedRequest($tasks,'liste des taches',200);
+        if ($this->compareId($idUser)) {
+            $tasks = Task::where('user_id', $idUser)->get();
+            return $this->message->succedRequest($tasks, 'liste des taches', 200);
+        }else{
+            return $this->message->errorRequest('Unauthenticated', 500);
+        }
+
     }
 
 
     public function searchTask(Request $request, $idUser)
     {
-        $title = $request->title;
-        if(strlen($title)>=3){
-            $result = Task::where('user_id', $idUser)
-                            ->where('title','like','%'.$title.'%')
-                            ->get();
-            return  $this->message->succedRequest($result,'Tasks found',200);
+        if ($this->compareId($idUser)) {
+            $title = $request->title;
+            if(strlen($title)>=3){
+                $result = Task::where('user_id', $idUser)
+                                ->where('title','like','%'.$title.'%')
+                                ->get();
+                return  $this->message->succedRequest($result,'Tasks found',200);
+            }
+        } else {
+            return $this->message->errorRequest('Unauthenticated', 500);
         }
 
     }
 
     public function store(Request $request, $idUser)
     {
-        try{
+        if ($this->compareId($idUser)) {
+            try{
                 $task = Task::create([
                     "title" => $request->title,
                     "description"=>$request->description,
@@ -56,49 +66,62 @@ class TaskController extends Controller
                 return $this->message->succedRequest($task,"Task added successfully!",201);
 
             }catch(QueryException $e){
-            if($e->getCode() == '23000');
-            return $this->message->errorRequest("Adding Error!",404);
+                if($e->getCode() == '23000');
+                return $this->message->errorRequest("Adding Error!",404);
+            }
+        } else {
+            return $this->message->errorRequest('Unauthenticated', 500);
         }
 
     }
 
     public function update(Request $request,$idUser)
     {
-       try{
+        if ($this->compareId($idUser)) {
+            try{
+                $task = Task::where('id',$request->id)
+                            ->where('user_id',$idUser)->first();
 
-            $task  = Task::where('id',$request->id)
-                        ->where('user_id',$idUser)->first();
+                $task->update([
+                    'title'=> $request->title ?? $task->title,
+                    'description'=> $request->description ?? $task->description,
+                    'etat'=>$request->etat ?? $task->etat
+                ]);
 
-                        $task->update([
-                            'title'=> $request->title ?? $task->title,
-                            'description'=> $request->description ?? $task->description,
-                            'etat'=>$request->etat ?? $task->etat
-                        ]);
-            return $this->message->succedRequest($task,'Updated with success !',200);
-        }catch(QueryException $e){
-            if($e->getCode() == '23000');
-            return $this->message->errorRequest("Editing Error!",404);
+                return $this->message->succedRequest($task,'Updated with success !',200);
+
+            }catch(QueryException $e){
+                if($e->getCode() == '23000');
+                return $this->message->errorRequest("Editing Error!",404);
+            }
+        } else {
+            return $this->message->errorRequest('Unauthenticated', 500);
         }
     }
 
     public function destroy($idUser,$idTask)
     {
-        try {
+        if ($this->compareId($idUser)) {
+            try {
                 $deleteTask = Task::where('user_id',$idUser)
                             ->where('id',$idTask)->first();
 
-                    if($deleteTask){
-                        $title = $deleteTask->title;
-                        $deleteTask->delete();
-                        return $this->message->succedRequest($title,"deleted succussfully!", 200);
-                    }else{
-                        return $this->message->errorRequest("Task not found or could not be deleted!", 404);
-                    }
-        } catch(QueryException $e){
-            if($e->getCode() == '23000');
-            return $this->message->errorRequest("Processing Error !",500);
+                if($deleteTask){
+                    $title = $deleteTask->title;
+                    $deleteTask->delete();
+                    return $this->message->succedRequest($title,"deleted succussfully!", 200);
+                }else{
+                    return $this->message->errorRequest("Task not found or could not be deleted!", 404);
+                }
+
+            } catch(QueryException $e){
+                if($e->getCode() == '23000');
+                return $this->message->errorRequest("Processing Error !",500);
+            }
+        } else {
+            return $this->message->errorRequest('Unauthenticated', 500);
         }
 
     }
-    
+
 }

@@ -4,15 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Task;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use App\Http\Controllers\RequestMessages;
+use Illuminate\Database\QueryException;
 
 
 
 class UserController extends Controller
 {
+    private $message;
+
+    public function __construct()
+    {
+        $this->message = new RequestMessages();
+    }
+
+    public function compareId($id)
+    {
+        if (auth()->user()->id == $id) {
+            return true;
+        }
+        return false;
+    }
 
     public function create(Request $request)
     {
@@ -85,6 +102,32 @@ class UserController extends Controller
         }
     }
 
+    public function destroy($idUser)
+    {
+        if ($this->compareId($idUser)) {
+            try {
+                $user = User::where('id', $idUser)->first();
+
+                if ($user) {
+                    $task = Task::where('user_id', $idUser)->get();
+                    foreach ($task as $value) {
+                        $value->delete();
+                    }
+
+                    $user->delete();
+                    return $this->message->succedRequest($user, "user deleted succussfully!", 200);
+                } else {
+                    return $this->message->errorRequest("User not found or could not be deleted!", 404);
+                }
+            } catch (QueryException $e) {
+                if ($e->getCode() == '23000');
+                return $this->message->errorRequest("Processing Error !", 500);
+            }
+        } else {
+            return $this->message->errorRequest('Unauthenticated', 500);
+        }
+    }
+
     public function loginUser(Request $request)
     {
         try {
@@ -92,7 +135,6 @@ class UserController extends Controller
                 [
                     'email' => 'required|email',
                     'password' => 'required|min:8'
-
                 ]
             );
 

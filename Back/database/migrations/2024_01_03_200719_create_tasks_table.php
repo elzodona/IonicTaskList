@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->text('description');
             $table->string('title');
-            $table->enum('etat', ['done', 'not_done', 'in_progress']);
+            $table->enum('etat', ['done', 'not_done', 'in_progress'])->default('not_done');
             $table->foreignIdFor(User::class)->constrained();
         });
     }
