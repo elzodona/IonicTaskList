@@ -102,32 +102,6 @@ class UserController extends Controller
         }
     }
 
-    public function destroy($idUser)
-    {
-        if ($this->compareId($idUser)) {
-            try {
-                $user = User::where('id', $idUser)->first();
-
-                if ($user) {
-                    $task = Task::where('user_id', $idUser)->get();
-                    foreach ($task as $value) {
-                        $value->delete();
-                    }
-
-                    $user->delete();
-                    return $this->message->succedRequest($user, "user deleted succussfully!", 200);
-                } else {
-                    return $this->message->errorRequest("User not found or could not be deleted!", 404);
-                }
-            } catch (QueryException $e) {
-                if ($e->getCode() == '23000');
-                return $this->message->errorRequest("Processing Error !", 500);
-            }
-        } else {
-            return $this->message->errorRequest('Unauthenticated', 500);
-        }
-    }
-
     public function loginUser(Request $request)
     {
         try {
@@ -188,7 +162,31 @@ class UserController extends Controller
         }
     }
 
+    // public function destroy($idUser)
+    // {
+    //     if ($this->compareId($idUser)) {
+    //         try {
+    //             $user = User::where('id', $idUser)->first();
 
+    //             if ($user) {
+    //                 $task = Task::where('user_id', $idUser)->get();
+    //                 foreach ($task as $value) {
+    //                     $value->delete();
+    //                 }
+
+    //                 $user->delete();
+    //                 return $this->message->succedRequest($user, "user deleted succussfully!", 200);
+    //             } else {
+    //                 return $this->message->errorRequest("User not found or could not be deleted!", 404);
+    //             }
+    //         } catch (QueryException $e) {
+    //             if ($e->getCode() == '23000');
+    //             return $this->message->errorRequest("Processing Error !", 500);
+    //         }
+    //     } else {
+    //         return $this->message->errorRequest('Unauthenticated', 500);
+    //     }
+    // }
 
 }
 

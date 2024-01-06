@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->text('description');
-            $table->string('title');
-            $table->enum('etat', ['done', 'not_done', 'in_progress'])->default('not_done');
+            $table->string('taskName');
+            $table->datetime('taskDate');
+            $table->enum('category', ['work', 'personnal', 'fun']);
+            $table->enum('priority', ['high', 'middle', 'low']);
             $table->foreignIdFor(User::class)->constrained();
         });
     }

@@ -1,0 +1,43 @@
+<ion-content>
+  <div class="padding">
+
+    <div class="logo">
+      <ion-icon color="light" name="sunny"></ion-icon>
+      <!-- <ion-icon color="light" name="cloudy-night"></ion-icon> -->
+      <!-- <img src="assets/logo.png"> -->
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <ion-item>
+        <ion-label color="light">NomComplet</ion-label>
+        <ion-input formControlName="name" color="light" type="text" placeholder="Nom complet"></ion-input>
+      </ion-item>
+
+      <br>
+
+      <ion-item>
+        <ion-label color="light">Email</ion-label>
+        <ion-input formControlName="email" color="light" type="email" placeholder="Adresse email"></ion-input>
+      </ion-item>
+
+      <br>
+
+      <ion-item>
+        <ion-label color="light">Password</ion-label>
+        <ion-input formControlName="password" color="light" type="password" placeholder="Mot de passe"></ion-input>
+      </ion-item>
+
+      <br><br><br>
+
+      <ion-button type="submit" color="light" expand="block" shape="round" fill="outline">Enregistrer</ion-button>
+    </form>
+
+    <br>
+
+    <ion-button (click)="login()" color="light" expand="block" shape="round">Se Connecter</ion-button>
+
+    <br>
+
+  </div>
+</ion-content>

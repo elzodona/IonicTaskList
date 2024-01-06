@@ -1,0 +1,78 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-avatar style="width: 5em; height: 5em; margin-right: 1em;">
+        <img src="assets/jean.jpg" alt="User Avatar">
+      </ion-avatar>
+      <ion-label style="font-weight: 500;font-size: 2em;">
+        {{userName}}
+        <p style="font-weight: 400;color: #433465;">{{today | date:'fullDate'}}</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-buttons class="un" slot="end">
+      <ion-button style="font-size: 2em;" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+
+    <ion-searchbar class="search-bar" placeholder="Search a task" (ionInput)="searchTasks($event)"></ion-searchbar>
+
+    <!-- <div style="display: flex;">
+      <input (input)="searchTasks($event)" class="search-bar" type="text" placeholder="search a task">
+    </div> -->
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1 style="margin-left: 0.5em; font-size: 2.5em;">TaskList</h1>
+    <select [(ngModel)]="selectedFilter" style="margin-right: 1em; background-color: white; border-radius: 10px;" (change)="filterTasks()">
+      <option value="one">all task</option>
+      <option value="un">aujourd'hui</option>
+      <option value="deux">cette semaine</option>
+      <option value="quatre">next semaine</option>
+      <option value="trois">ce mois</option>
+    </select>
+  </div>
+
+  <ion-card style="border: 1px solid; border-radius: 10px;" *ngFor="let item of todolist?.reverse(); let i=index" class="ion-margin">
+    <ion-card-header>
+      <ion-card-subtitle [style.color]="item.category === 'work' ? 'green' : (item.category === 'personnal' ? 'red' : (item.category === 'fun' ? 'yellow' : 'default-color'))">
+        {{item.category}}
+      </ion-card-subtitle>
+      <ion-item>
+        <ion-icon *ngIf="item.priority==='high'" color="danger" size="small" name="ellipse"></ion-icon>
+        <ion-icon *ngIf="item.priority==='middle'" color="warning" size="small" name="ellipse"></ion-icon>
+        <ion-icon *ngIf="item.priority==='low'" color="success" size="small" name="ellipse"></ion-icon>
+        <ion-label style="margin-left: 6px;">{{item.taskName}}</ion-label>
+      </ion-item>
+    </ion-card-header>
+
+    <ion-card-content >
+      <ion-label>{{ item.taskDate}}</ion-label>
+    </ion-card-content>
+
+    <ion-row style="display: flex; justify-content: flex-end;">
+      <ion-item button (click)="update(item)">
+        <ion-icon name="create-outline"></ion-icon>
+        <p style="color: rgb(189, 189, 7);">Update</p>
+      </ion-item>
+      <ion-item button (click)="delete(item.id)">
+        <ion-icon name="trash-outline"></ion-icon>
+        <p style="color: red;">Cancel</p>
+      </ion-item>
+    </ion-row>
+
+  </ion-card>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="add" (click)="addTask()"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

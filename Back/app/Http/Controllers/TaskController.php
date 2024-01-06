@@ -41,17 +41,20 @@ class TaskController extends Controller
     public function searchTask(Request $request, $idUser)
     {
         if ($this->compareId($idUser)) {
-            $title = $request->title;
-            if(strlen($title)>=3){
+            $name = $request->taskName;
+            if(strlen($name) > 0){
                 $result = Task::where('user_id', $idUser)
-                                ->where('title','like','%'.$title.'%')
+                                ->where('taskName','like','%'.$name.'%')
                                 ->get();
-                return  $this->message->succedRequest($result,'Tasks found',200);
+                if (count($result) > 0){
+                    return  $this->message->succedRequest($result, 'Tasks found', 200);
+                }else{
+                    return $this->message->errorRequest('Aucune tache enregistrée', 404);
+                }
             }
         } else {
             return $this->message->errorRequest('Unauthenticated', 500);
         }
-
     }
 
     public function store(Request $request, $idUser)
@@ -59,9 +62,11 @@ class TaskController extends Controller
         if ($this->compareId($idUser)) {
             try{
                 $task = Task::create([
-                    "title" => $request->title,
-                    "description"=>$request->description,
-                    "user_id"=>$idUser
+                    "taskName" => $request->taskName,
+                    "taskDate" => $request->taskDate,
+                    "category" => $request->category,
+                    "priority" => $request->priority,
+                    "user_id" => $idUser
                 ]);
                 return $this->message->succedRequest($task,"Task added successfully!",201);
 
@@ -83,9 +88,10 @@ class TaskController extends Controller
                             ->where('user_id',$idUser)->first();
 
                 $task->update([
-                    'title'=> $request->title ?? $task->title,
-                    'description'=> $request->description ?? $task->description,
-                    'etat'=>$request->etat ?? $task->etat
+                    'taskName'=> $request->taskName ?? $task->taskName,
+                    'taskDate'=> $request->taskDate ?? $task->taskDate,
+                    'category'=>$request->category ?? $task->category,
+                    'priority' => $request->priority ?? $task->priority,
                 ]);
 
                 return $this->message->succedRequest($task,'Updated with success !',200);
@@ -107,7 +113,7 @@ class TaskController extends Controller
                             ->where('id',$idTask)->first();
 
                 if($deleteTask){
-                    $title = $deleteTask->title;
+                    $title = $deleteTask->taskName;
                     $deleteTask->delete();
                     return $this->message->succedRequest($title,"deleted succussfully!", 200);
                 }else{
